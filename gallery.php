@@ -59,6 +59,14 @@
 		case 'popular-media':
 			define('META_TITLE',$lang['popularMedia'].' &ndash; '.$config['settings']['site_title']); // Override page title, description, keywords and page encoding here
 		break;
+		//case added by Abhijith to link the Newest Images gallery to ktools newest-media feature.
+		case 'gallery':
+			if($_REQUEST['id'] == 2)
+			{
+				define('META_TITLE',$lang['newestMedia'].' &ndash; '.$config['settings']['site_title']); // Override page title, description, keywords and page encoding here
+				$mode = "newest-media";
+			}
+			break;
 	}
 	
 	require_once BASE_PATH.'/assets/includes/header.inc.php';
