@@ -19,6 +19,9 @@
 	require_once BASE_PATH.'/assets/includes/language.inc.php';
 	require_once BASE_PATH.'/assets/includes/cart.inc.php';
 	require_once BASE_PATH.'/assets/includes/affiliate.inc.php';
+	require_once BASE_PATH.'/mailchimp/Mailchimp.php';
+	//error_reporting(E_ALL & ~E_NOTICE);
+	//ini_set("display_errors", 1);
 
 	//define('META_TITLE',''); // Override page title, description, keywords and page encoding here
 	//define('META_DESCRIPTION','');
@@ -204,7 +207,11 @@
 						)
 					"); // Save member
 					$saveID = mysqli_insert_id($db);
-					
+
+						$Mailchimp = new Mailchimp( $mailchimp_api_key );
+						$Mailchimp_Lists = new Mailchimp_Lists( $Mailchimp );
+						$Mailchimp_Lists->subscribe( $mailchimp_list_id, array( 'email' => $email ) );
+				
 					mysqli_query($db,
 					"
 						INSERT INTO {$dbinfo[pre]}members_address  
@@ -349,6 +356,7 @@
 							);
 							$saveid2 = mysqli_insert_id($db);
 							
+
 							if($membershipDB['mstype'] == 'recurring' and $invoiceTotal > 0) // Only create an item if there is a fee
 							{
 								// Create invoice items
@@ -499,6 +507,7 @@
 							//$member['f_name'].' '.$member['l_name'] - used to be name
 							kmail($member['email'],'',$config['settings']['support_email'],$config['settings']['business_name'],$content['name'],$content['body']); // Send email to confirm account and set jump to to confirm page notice
 							//kmail($member['email'],$member['email'],$config['settings']['support_email'],$config['settings']['business_name'],$content['name'],$content['body']); // Send email to confirm account and set jump to to confirm page notice
+							
 						}
 						catch(Exception $e)
 						{
