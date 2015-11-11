@@ -82,9 +82,10 @@ while($data = mysqli_fetch_array($res))
     }
             
     $pic_description =$data['Description']; 
+    $pic_Views = $data['Views'];
     if(!empty($pic_description))
     {
-        $insert_description = "UPDATE ps4_media SET date_added='$pic_date', description='$pic_description' WHERE media_id='$media_id'";
+        $insert_description = "UPDATE ps4_media SET date_added='$pic_date', description='$pic_description', views='$pic_Views' WHERE media_id='$media_id'";
     //  print_r($insert_description);
      //  echo "<br>";
         mysqli_query($link1,$insert_description);
