@@ -40,6 +40,28 @@
 	//print_k($activeCurrencies);
 	//print_k($displayCurrencies);
 	
+
+	/*
+	* Get the products assigned to this gallery
+	*/
+	$productsResult = mysqli_query($db,"SELECT item_id FROM ps4_item_galleries WHERE gallery_id='16' AND mgrarea='products'");
+	if($returnRows = mysqli_num_rows($productsResult))
+	{
+		while($products = mysqli_fetch_assoc($productsResult))
+			$productsArray[] = $products['item_id'];
+			foreach ($productsArray as $key => $value) {
+				$prod_id = $productsArray[$key];
+				//$productsDetails = mysqli_query($db,"SELECT * FROM ps4_products WHERE prod_id='$prod_id'");
+				$productsDetails = mysqli_query($db,"SELECT * FROM 
+																						`ps4_products`, `ps4_item_photos` 
+																						WHERE `ps4_products`.`prod_id` = `ps4_item_photos`.`item_id` 
+																						AND(`ps4_products`.`prod_id` = $prod_id AND `ps4_item_photos`.`mgrarea`='prod')");
+				$productData[] = mysqli_fetch_assoc($productsDetails);
+			}
+		$smarty->assign('productRows',$returnRows);
+		$smarty->assign('productsData1',$productData);
+	}
+
 	try
 	{	
 			
