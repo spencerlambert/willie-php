@@ -19,6 +19,7 @@
 	require_once BASE_PATH.'/assets/includes/language.inc.php';
 	require_once BASE_PATH.'/assets/includes/cart.inc.php';
 	require_once BASE_PATH.'/assets/includes/affiliate.inc.php';
+	require_once BASE_PATH.'/mailchimp/Mailchimp.php';
 
 	//define('META_TITLE',''); // Override page title, description, keywords and page encoding here
 	//define('META_DESCRIPTION','');
@@ -77,6 +78,10 @@
 		$_SESSION['shippingAddressSession']['postalCode'] 	= $shippingPostalCode;
 		$_SESSION['shippingAddressSession']['email'] 		= $shippingEmail;
 		$_SESSION['shippingAddressSession']['phone'] 		= $shippingPhone;
+
+		$Mailchimp = new Mailchimp( $mailchimp_api_key );
+    $Mailchimp_Lists = new Mailchimp_Lists( $Mailchimp );
+    $Mailchimp_Lists->subscribe( $mailchimp_list_id, array( 'email' => $shippingEmail ) );
 	}
 	if($_POST['shippingFirstName']) //!$_SESSION['billingAddressSession'] and 
 	{

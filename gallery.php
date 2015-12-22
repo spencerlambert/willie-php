@@ -432,6 +432,12 @@
 					$smarty->assign('currentGallery',$currentGallery);
 					$smarty->assign('galleriesData',$_SESSION['galleriesData']);
 					$smarty->assign('subGalleriesData',$subGalleriesData);
+					// Added by Abhijith to remove the "Empty gallery" message for products gallery.
+					//if($_REQUEST['id'] == 17)
+					if(true)
+					{
+						$smarty->assign("isProductGallery", true);
+					}
 					$templateFile = 'gallery.tpl'; 
 				}
 				else

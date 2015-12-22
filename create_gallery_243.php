@@ -1,22 +1,15 @@
 <?php
 //exit;
-ini_set("display_errors", "1");
-error_reporting(E_ALL);
+error_reporting("E_ALL");
 
-$link1 = mysqli_connect("localhost","root","eLs862paX7","willie_photos");
-/*
-$query1 = "select * from ps4_media_galleries  where gallery_id=13";
-$res1 = mysqli_query($link1,$query1);
-while ($details = mysqli_fetch_array($res1)) {
-  $gmedia_id = $details['gmedia_id'];
-  $del_query = "delete from ps4_media_prints where media_id='$gmedia_id'";
-  echo $del_query;
-  mysqli_query($link1,$del_query);
-}
-
-exit;
-
-
+  function clean_filename($input)
+  {
+    # CONVERT THE HTML CHARACTERS BACK
+    $replace = array("&","'","\'");
+    $newname = str_replace($replace,"",$input);
+    $newname = str_replace(" ","_",$newname);
+    return $newname;
+  }
 
 // for matching file names with the ktools database files.
 $trans = array("=" => "");
@@ -29,6 +22,7 @@ if(!$link1)
 }
 // generate gallery script
 $replace_array = array("-","--","---");
+
 //use this for 104.131.33.235
 $category = array('1' =>'10', 
                   '2' =>'4',
@@ -43,119 +37,6 @@ $category = array('1' =>'10',
                   '99' =>'13',
                   "fav"=>'3'
                  );
-
-$panCat = array( 
-  '1' => 20010,
-  '2' => 20011,
-  '3' => 20012,
-  '4' => 20013,
-  '5' => 20015,
-  '6' => 20016,
-  '7' => 20017,
-  '8' => 20018,
-  '9' => 20019,
-  '10' => 20020,
-  '12' => 20022,
-  '13' => 20023,
-  '14' => 20024,
-  '15' => 20025
- );
-
-$panGallery = array( 
-  '1' => 28,
-  '2' => 29,
-  '3' => 30,
-  '4' => 26,
-  '5' => 31,
-  '6' => 32,
-  '7' => 33,
-  '8' => 34,
-  '9' => 35,
-  '10' => 36,
-  '12' => 37,
-  '13' => 38,
-  '14' => 39,
-  '15' => 40
- );
-
-// for linking the media to print size galleres.
-$query3 = "SELECT * FROM photos_oldsite";
-$res3 = mysqli_query($link1, $query3);
-
-while($data3 = mysqli_fetch_array($res3))
-{
-    
-    $old1 = str_replace("=", "", $data3['ID']);
-    $file_id = preg_replace('/-+/','_', $old1);
-    $file_path = "assets/library/".$date."/originals/".$file_id.".jpg";
-    $new_file_name = $file_id.".jpg";
-    $query4 = "SELECT * FROM ps4_media WHERE filename='$new_file_name'";
-   
-    $res4 = mysqli_query($link1,$query4);
-    $data4 = mysqli_fetch_array($res4);
-
-    
-    if(file_exists($file_path) && !empty($data3['Format']))
-    {
-      //  print_r($file_path);
-      //  echo "<br>";
-        $gmedia_id = $data4['media_id'];
-        if($data3['Format'] == 1)
-        {
-          $gallery_id = 24;
-        }
-        elseif ($data3['Format'] == 2)
-        {
-          $gallery_id = 25;
-        }
-        elseif ($data3['Format'] == 3)
-        {
-          $panratio = $data3['panratio'];
-          echo $panratio;
-          echo " : ";
-          $gallery_id = $panGallery[$panratio];
-
-          echo $gallery_id;
-          echo "<br>"; 
-        }
-
-        $query7 = "SELECT * FROM ps4_media_galleries WHERE gmedia_id='$gmedia_id' AND gallery_id='$gallery_id'";
-        echo $query7."<br>";
-        $res7 = mysqli_query($link1,$query7);
-        $data7 = mysqli_fetch_array($res7);
-        if(empty($data7))
-        {
-            $query8 = "INSERT INTO ps4_media_galleries (gmedia_id,gallery_id) VALUES('$gmedia_id', '$gallery_id')";
-            mysqli_query($link1, $query8);
-        }
-        
-
-    }
-
-}
-
-exit;
-
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 // use this for 104.236.234.131
 $category = array('1' =>'11', 
@@ -170,11 +51,11 @@ $category = array('1' =>'11',
                   '201' =>'13',
                   '99' =>'14'
                  );
-
+*/
 // for updating all dates to Jan 1 2000
 $update = "UPDATE ps4_media SET `date_added`='2000-01-01'";
 mysqli_query($link1, $update);
-*/
+
 $query = "SELECT * FROM photos_oldsite";
 $res = mysqli_query($link1, $query);
 while($data = mysqli_fetch_array($res))
@@ -202,10 +83,9 @@ while($data = mysqli_fetch_array($res))
             
     $pic_description =$data['Description']; 
     $pic_Views = $data['Views'];
-    $title = str_replace("_", " ", $filename);
     if(!empty($pic_description))
     {
-        $insert_description = "UPDATE ps4_media SET date_added='$pic_date', title='$title', description='$pic_description', views='$pic_Views' WHERE media_id='$media_id'";
+        $insert_description = "UPDATE ps4_media SET date_added='$pic_date', description='$pic_description', views='$pic_Views' WHERE media_id='$media_id'";
     //  print_r($insert_description);
      //  echo "<br>";
         mysqli_query($link1,$insert_description);
@@ -226,10 +106,70 @@ while($data = mysqli_fetch_array($res))
 }
 
 
-exit;
 
 
 
+
+
+
+
+
+
+/*
+$query = "SELECT * FROM ps4_media";
+$res = mysqli_query($link1, $query);
+
+$missing_files = array();
+while($data = mysqli_fetch_array($res))
+{
+  //  echo '<pre>';
+  //  print_r($data);
+  //  echo '</pre>';
+    $filename = strtr($data['filename'], $trans);
+    
+    $url = "/assets/library/".$date."/originals/".$filename;
+    $path = "assets/library/".$date."/originals/".$filename;
+  //  echo $url;
+
+  // echo "<img src='".$url."'>";
+    if(file_exists($path))
+    {
+        $info = pathinfo($filename);
+        $pic_id = basename($filename,'.'.$info['extension']);
+       // echo "yes";
+        $query2 = "SELECT * FROM photos_oldsite WHERE id='$pic_id'"; 
+        $res2 = mysqli_query($link1,$query2);
+        while($data2 = mysqli_fetch_array($res2))
+        {
+         //  print_r($data2['Description']);
+          if(!empty($data2['Date']))
+          {
+            $pic_date = $data2['Date'];
+          }
+          else
+          {
+            $pic_date = "2000-01-01"; 
+          }
+            
+            $pic_description =$data2['Description']; 
+            if(!empty($pic_description))
+            {
+                $insert_description = "UPDATE ps4_media SET date_added='$pic_date', description='$pic_description' WHERE filename='$filename'";
+             //  print_r($insert_description);
+             //  echo "<br>";
+                mysqli_query($link1,$insert_description);
+
+            }
+        }
+       
+    }
+    else
+    {
+        $missed_file = basename($filename);
+        $missing_files[] = $missed_file;
+    }
+}
+*/
 
 $missing_files2= array();
 
@@ -297,18 +237,6 @@ while($data3 = mysqli_fetch_array($res3))
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
  echo "<pre>";
  print("Missed files:");
  print_r($missing_files2);
